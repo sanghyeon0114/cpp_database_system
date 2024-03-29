@@ -18,9 +18,8 @@ struct Entry {
 };
 
 struct Database {
-  // Todo
-  Entry *entry;
-  int size;
+  Entry **entry; // dynamic array.
+  int size; // entry size;
 };
 
 // 엔트리를 생성한다.
@@ -40,5 +39,7 @@ void remove(Database &database, std::string &key);
 
 // 데이터베이스를 해제한다.
 void destroy(Database &database);
+
+void list(Database &database);
 
 #endif
