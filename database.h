@@ -40,6 +40,10 @@ void remove(Database &database, std::string &key);
 // 데이터베이스를 해제한다.
 void destroy(Database &database);
 
+void printEntry(Entry &entry);
+
 void list(Database &database);
+
+void removeArray(Array *array);
 
 #endif

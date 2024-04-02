@@ -2,8 +2,16 @@
 #include <iostream>
 #include <string>
 
-// 검증 아직 안됨.
 void removeArray(Array *array) {
+    if(array == nullptr) {
+        return;
+    }
+
+    if(array->items == nullptr) {
+        delete array;
+        return;
+    }
+
     if(array->type == INT) {
         delete[] static_cast<int *>(array->items);
     } else if(array->type == DOUBLE) {
@@ -12,13 +20,32 @@ void removeArray(Array *array) {
         delete[] static_cast<std::string *>(array->items);
     } else if(array->type == ARRAY) {
         for(int i = 0; i < array->size; i++) {
-            removeArray(static_cast<Array *>(static_cast<void **>(array->items)[i])); // void* -> void** -> Array *
+            if(static_cast<Array *>(static_cast<void **>(array->items)[i]) != nullptr) {
+                removeArray(static_cast<Array *>(static_cast<void **>(array->items)[i])); // void* -> void** -> Array *
+            }
         }
         delete[] static_cast<Array *>(array->items);
     }
+    delete array;
 }
 
 void printArray(Array *array) {
+    std::cout << "[";
+    for(int i = 0; i < array->size; i++) {
+        if(array->type == INT) {
+            std::cout << static_cast<int *>(array->items)[i];
+        } else if(array->type == DOUBLE) {
+            std::cout << static_cast<double *>(array->items)[i];
+        } else if(array->type == STRING) {
+            std::cout << static_cast<std::string *>(array->items)[i];
+        } else if(array->type == ARRAY) {
+            printArray(static_cast<Array *>(static_cast<void **>(array->items)[i]));
+        }
+        if(i != array->size-1) {
+            std::cout << ", ";
+        }
+    }
+    std::cout << "]";
 }
 
 void removeEntryValue(Entry *entry) {
@@ -83,6 +110,7 @@ void remove(Database &database, std::string &key) {
             if((*database.entry[i]).key == key) {
                 isDelete = true;
                 removeEntryValue(database.entry[i]);
+                delete database.entry[i];
             }
         } else {
             database.entry[i-1] = database.entry[i];
@@ -102,17 +130,23 @@ void destroy(Database &database) {
     database.size = 0;
 }
 
+void printEntry(Entry &entry) {
+    std::cout << entry.key;
+    if(entry.type == INT) {
+        std::cout << ": " << *static_cast<int *>(entry.value) << std::endl;
+    } else if(entry.type == DOUBLE) {
+        std::cout << ": " << *static_cast<double *>(entry.value) << std::endl;
+    } else if(entry.type == STRING) {
+        std::cout << ": " << *static_cast<std::string *>(entry.value) << std::endl;
+    } else if(entry.type == ARRAY) {
+        std::cout << ": ";
+        printArray(static_cast<Array *>(entry.value));
+        std::cout << std::endl;
+    }
+}
+
 void list(Database &database) {
     for(int i = 0; i < database.size; i++) {
-        std::cout << "key: " << database.entry[i]->key << std::endl;
-        if(database.entry[i]->type == INT) {
-            std::cout << "value: " << *static_cast<int *>(database.entry[i]->value) << std::endl;
-        } else if(database.entry[i]->type == DOUBLE) {
-            std::cout << "value: " << *static_cast<double *>(database.entry[i]->value) << std::endl;
-        } else if(database.entry[i]->type == STRING) {
-            std::cout << "value: " << *static_cast<std::string *>(database.entry[i]->value) << std::endl;
-        } else if(database.entry[i]->type == ARRAY) {
-            printArray(static_cast<Array *>(database.entry[i]->value));
-        }
+        printEntry(*database.entry[i]);
     }
 }
