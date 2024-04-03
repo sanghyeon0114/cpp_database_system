@@ -26,9 +26,19 @@ Array *makeArray() {
         return nullptr;
     }
 
+    string inputSize;
     int size;
     cout << "size: ";
-    cin >> size;
+    cin >> inputSize;
+    try {
+        size = stoi(inputSize);
+    } catch (const std::invalid_argument& e) {
+        cout << "invalid size" << endl;
+        return nullptr;
+    } catch (const std::out_of_range& e) {
+        cout << "invalid size" << endl;
+        return nullptr;
+    }
 
     Array *array = new Array;
     array->size = size;
@@ -50,8 +60,9 @@ Array *makeArray() {
         array->items = new string[size];
         for(int i = 0; i < size; i++) {
             cout << "item[" << i << "]: ";
-            cin.ignore();
-            getline(cin, static_cast<string*>(array->items)[i]);
+            string inputStr;
+            getline(cin >> ws, inputStr);
+            static_cast<string*>(array->items)[i] = inputStr;
         }
     } else if(type == ARRAY) {
         array->items = new Array[size];
@@ -103,8 +114,7 @@ void command_add(Database &database) {
         entry = create(type, key, value);
     } else if(type == STRING) {
         string *value = new string;
-        cin.ignore();
-        getline(cin, *value);
+        getline(cin >> ws, *value);
         entry = create(type, key, value);
     } else if(type == ARRAY) {
         Array *value = makeArray();
@@ -164,6 +174,8 @@ int main() {
             command_del(db);
         } else if(command.compare("exit") == 0) {
             break;
+        } else {
+            cout << "invalid command" << endl;
         }
 
         cout << endl;

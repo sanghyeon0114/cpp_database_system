@@ -37,7 +37,7 @@ void printArray(Array *array) {
         } else if(array->type == DOUBLE) {
             std::cout << static_cast<double *>(array->items)[i];
         } else if(array->type == STRING) {
-            std::cout << static_cast<std::string *>(array->items)[i];
+            std::cout << "\"" << static_cast<std::string *>(array->items)[i] << "\"";
         } else if(array->type == ARRAY) {
             printArray(static_cast<Array *>(static_cast<void **>(array->items)[i]));
         }
@@ -137,7 +137,7 @@ void printEntry(Entry &entry) {
     } else if(entry.type == DOUBLE) {
         std::cout << ": " << *static_cast<double *>(entry.value) << std::endl;
     } else if(entry.type == STRING) {
-        std::cout << ": " << *static_cast<std::string *>(entry.value) << std::endl;
+        std::cout << ": " << "\"" << *static_cast<std::string *>(entry.value) << "\"" << std::endl;
     } else if(entry.type == ARRAY) {
         std::cout << ": ";
         printArray(static_cast<Array *>(entry.value));
